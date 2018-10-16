@@ -5,7 +5,7 @@ import com.jeff.fischman.exercise.error.ErrorCounts;
 import com.jeff.fischman.exercise.process.verification.MissingMessageChecker;
 import com.jeff.fischman.exercise.utility.Printer;
 
-public class Reporter {
+public class OutputController {
     private ErrorCounts _errorCounts;
     private MissingMessageChecker _missingMessageChecker;
     private BookReportController _bookReportController;
@@ -13,12 +13,12 @@ public class Reporter {
     private Printer _printer;
     private Book _book;
 
-    public Reporter(ErrorCounts errorCounts,
-                    MissingMessageChecker missingMessageChecker,
-                    BookReportController bookReportController,
-                    TradeReporter tradeReporter,
-                    Printer printer,
-                    Book book)
+    public OutputController(ErrorCounts errorCounts,
+                            MissingMessageChecker missingMessageChecker,
+                            BookReportController bookReportController,
+                            TradeReporter tradeReporter,
+                            Printer printer,
+                            Book book)
     {
         _errorCounts = errorCounts;
         _missingMessageChecker = missingMessageChecker;

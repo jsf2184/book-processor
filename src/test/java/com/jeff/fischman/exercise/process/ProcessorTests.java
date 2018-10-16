@@ -1,7 +1,7 @@
 package com.jeff.fischman.exercise.process;
 
 import com.jeff.fischman.exercise.messages.*;
-import com.jeff.fischman.exercise.process.reporting.Reporter;
+import com.jeff.fischman.exercise.process.reporting.OutputController;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -18,7 +18,7 @@ public class ProcessorTests {
     private Parser _parser;
     private TradeProcessor _tradeProcessor;
     private OrderDistributor _orderDistributor;
-    private Reporter _reporter;
+    private OutputController _outputController;
 
     @Test
     public void testProcessInputPerformsProperDelegation() {
@@ -35,9 +35,9 @@ public class ProcessorTests {
             verify(_tradeProcessor, times(1)).process(_trades.get(i));
         }
         // the reporters printPostMessageReport() should have been called once for each trade and order
-        verify(_reporter, times(numTradesAndOrders * 2)).printPostMessageReport();
+        verify(_outputController, times(numTradesAndOrders * 2)).printPostMessageReport();
         // and printFinal report should be called exactly once.
-        verify(_reporter, times(1)).printFinalReport();
+        verify(_outputController, times(1)).printFinalReport();
     }
 
     private Processor createSut(int numTradesAndOrders) {
@@ -65,13 +65,13 @@ public class ProcessorTests {
         _stream = inputList.stream();
         _tradeProcessor = mock(TradeProcessor.class);
         _orderDistributor = mock(OrderDistributor.class);
-        _reporter = mock(Reporter.class);
+        _outputController = mock(OutputController.class);
 
         Processor sut = new Processor(_stream,
                                       _parser,
                                       _tradeProcessor,
                                       _orderDistributor,
-                                      _reporter);
+                                      _outputController);
         return sut;
     }
 }

@@ -1,8 +1,7 @@
 package com.jeff.fischman.exercise.process;
 
-import com.jeff.fischman.exercise.error.ErrorCounts;
 import com.jeff.fischman.exercise.messages.*;
-import com.jeff.fischman.exercise.process.reporting.Reporter;
+import com.jeff.fischman.exercise.process.reporting.OutputController;
 
 import java.util.stream.Stream;
 
@@ -12,19 +11,19 @@ public class Processor implements MessageHandler {
     private Parser _parser;
     private TradeProcessor _tradeProcessor;
     private OrderDistributor _orderDistributor;
-    private Reporter _reporter;
+    private OutputController _outputController;
 
     public Processor(Stream<String> stream,
                      Parser parser,
                      TradeProcessor tradeProcessor,
                      OrderDistributor orderDistributor,
-                     Reporter reporter)
+                     OutputController outputController)
     {
         _stream = stream;
         _parser = parser;
         _tradeProcessor = tradeProcessor;
         _orderDistributor = orderDistributor;
-        _reporter = reporter;
+        _outputController = outputController;
     }
 
     public void processMessages() {
@@ -42,12 +41,12 @@ public class Processor implements MessageHandler {
             message.invokeHandlerMethod(this);
         }
         // Perform all the per-message reporting that is required.
-        _reporter.printPostMessageReport();
+        _outputController.printPostMessageReport();
     }
 
     private void onEndOfData()
     {
-        _reporter.printFinalReport();
+        _outputController.printFinalReport();
     }
 
     @Override

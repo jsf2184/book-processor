@@ -7,7 +7,7 @@ import com.jeff.fischman.exercise.error.ErrorCounts;
 import com.jeff.fischman.exercise.messages.Parser;
 import com.jeff.fischman.exercise.process.*;
 import com.jeff.fischman.exercise.process.reporting.BookReportController;
-import com.jeff.fischman.exercise.process.reporting.Reporter;
+import com.jeff.fischman.exercise.process.reporting.OutputController;
 import com.jeff.fischman.exercise.process.reporting.TradeReporter;
 import com.jeff.fischman.exercise.utility.Printer;
 import com.jeff.fischman.exercise.utility.StreamUtility;
@@ -81,18 +81,18 @@ public class Bootstrapper {
         addOrderProcessor.setMissingMessageChecker(missingMessageChecker);
 
         BookReportController bookReportController = new BookReportController(bookReportFrequency);
-        Reporter reporter = new Reporter(errorCounts,
-                                         missingMessageChecker,
-                                         bookReportController,
-                                         tradeReporter,
-                                         _printer,
-                                         book);
+        OutputController outputController = new OutputController(errorCounts,
+                                                                 missingMessageChecker,
+                                                                 bookReportController,
+                                                                 tradeReporter,
+                                                                 _printer,
+                                                                 book);
 
         Processor res = new Processor(_stream,
                                       new Parser(errorCounts),
                                       tradeProcessor,
                                       orderDistributor,
-                                      reporter);
+                                      outputController);
         return res;
     }
 

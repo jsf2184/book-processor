@@ -9,7 +9,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.*;
 
 
-public class ReporterTests {
+public class OutputControllerTests {
     private ErrorCounts _errorCounts;
     private MissingMessageChecker _missingMessageChecker;
     private BookReportController _bookReportController;
@@ -29,7 +29,7 @@ public class ReporterTests {
     private void testPrintPostMessageReport(boolean tradeReporterReturnsReport,
                                             boolean bookReportControllerReturnValue)
     {
-        Reporter sut = createSut();
+        OutputController sut = createSut();
         String midQuoteString = "midQuoteString";
         String tradeReporterReport = tradeReporterReturnsReport ?
                 "tradeReporterReport" :
@@ -72,7 +72,7 @@ public class ReporterTests {
     private void testPrintFinalReport(int numGeneratedMissingOrders,
                                       boolean bookReportControllerReturnValue)
     {
-        Reporter sut = createSut();
+        OutputController sut = createSut();
         String errorCountsReport = "errorCountsReport";
         String bookString = "bookString";
 
@@ -104,19 +104,19 @@ public class ReporterTests {
     }
 
 
-    private Reporter createSut() {
+    private OutputController createSut() {
         _errorCounts = mock(ErrorCounts.class);
         _missingMessageChecker = mock(MissingMessageChecker.class);
         _bookReportController = mock(BookReportController.class);
         _tradeReporter = mock(TradeReporter.class);
         _printer = mock(Printer.class);
         _book = mock(Book.class);
-        Reporter res = new Reporter(_errorCounts,
-                                    _missingMessageChecker,
-                                    _bookReportController,
-                                    _tradeReporter,
-                                    _printer,
-                                    _book);
+        OutputController res = new OutputController(_errorCounts,
+                                                    _missingMessageChecker,
+                                                    _bookReportController,
+                                                    _tradeReporter,
+                                                    _printer,
+                                                    _book);
         return res;
     }
 }
