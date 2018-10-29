@@ -38,7 +38,26 @@ public class ExpectedMessageStoreTests {
         validateOrderExpectations(sut, 0);
     }
 
-    
+    @Test
+    public void testExpectedOrderStreamReplayIsntAConcurrentModificationViolation() {
+        ExpectedMessageStore sut = new ExpectedMessageStore();
+        Order o1 = new Order(Action.Remove, 1L, Side.Buy, 3L, new BigDecimal("10.0"));
+        sut.addChangedOrderExpectation(o1);
+        validateOrderExpectations(sut, 1);
+        Order o2 = new Order(Action.Remove, 2L, Side.Buy, 4L, new BigDecimal("10.0"));
+        sut.addChangedOrderExpectation(o2);
+        validateOrderExpectations(sut, 2);
+
+        Stream<Order> missingChangedOrderStream = sut.getMissingChangedOrderStream();
+        // When we go through the stream, we are modifying the underlying map at the same time we
+        // are removing elements from it. Prior to using a ConcurrentHashMap in ExpectedMessageStore, this
+        // would have caused a ConcurrentModificationException.
+        //
+        missingChangedOrderStream.forEach(sut::onActualChangedOrder);
+        // And make sure they are truly gone.
+        Assert.assertEquals(0, sut. getMissingChangedOrderCount());
+    }
+
     @Test
     public void testActualOrderDoesNotMatchExpectedOrderId() {
         ExpectedMessageStore sut = new ExpectedMessageStore();

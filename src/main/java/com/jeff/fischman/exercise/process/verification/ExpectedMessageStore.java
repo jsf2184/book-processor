@@ -4,6 +4,7 @@ import com.jeff.fischman.exercise.messages.Order;
 import com.jeff.fischman.exercise.messages.Trade;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 // Whenever our Book determines that an incoming order should result in a trade, this
@@ -13,11 +14,14 @@ import java.util.stream.Stream;
 //
 public class ExpectedMessageStore implements ExpectedMessageConsumer {
     private Map<Long, Order> _expectedOrders;
-    private LinkedList<Trade> _expectedTrades;
+    private Set<Trade> _expectedTrades;
 
     public ExpectedMessageStore() {
-        _expectedOrders = new HashMap<>();
-        _expectedTrades = new LinkedList<>();
+        // With a ConcurrentHashMap we can iterate through the map and remove entries from it at the same
+        // time. Something which will happen when someone uses our reault of getMissingChangedOrderStream().
+        //
+        _expectedOrders = new ConcurrentHashMap<>();
+        _expectedTrades = new HashSet<>();
     }
 
     public void addTradeExpectation(Trade trade) {
@@ -32,15 +36,8 @@ public class ExpectedMessageStore implements ExpectedMessageConsumer {
     // is met so we can removed it from our list of unmatched trade expectations.
     //
     public boolean onActualTrade(Trade trade) {
-        Iterator<Trade> iterator = _expectedTrades.iterator();
-        while(iterator.hasNext()) {
-            Trade entry = iterator.next();
-            if (entry.equals(trade)) {
-                iterator.remove();
-                return true;
-            }
-        }
-        return false;
+        boolean res = _expectedTrades.remove(trade);
+        return res;
     }
 
     // When we get a order in, see if it was one we expected. If so, our expectation
@@ -83,8 +80,12 @@ public class ExpectedMessageStore implements ExpectedMessageConsumer {
     }
 
     public Stream<Order> getMissingChangedOrderStream() {
-        ArrayList<Order> expectedOrderList = new ArrayList<>(_expectedOrders.values());
-        return expectedOrderList.stream();
+        // Because _expectedOrders is a ConcurrentHashMap, we are safe to build the stream directly from
+        // the map. Before using the ConcurrentHashMap we had to make a copy of the values and put them
+        // in a new ArrayList.
+        //
+        Stream<Order> res = _expectedOrders.values().stream();
+        return res;
     }
 
 
