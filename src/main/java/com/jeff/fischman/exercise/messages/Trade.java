@@ -7,7 +7,6 @@ public class Trade implements Message {
     private long _quantity;
     private BigDecimal _price;
 
-
     public Trade(long quantity, BigDecimal price) {
         _quantity = quantity;
         _price = price;
@@ -40,4 +39,8 @@ public class Trade implements Message {
                 Objects.equals(_price, trade._price);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(_quantity, _price);
+    }
 }
